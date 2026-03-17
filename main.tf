@@ -115,9 +115,9 @@ resource "azurerm_linux_virtual_machine" "vm" {
               #!/bin/bash
               sudo apt-get update -y
               sudo apt-get install nginx -y
-              sudo systemctl start nginx
-              sudo systemctl enable nginx
-              echo "<h1>terraform-azure-core: Phase 1 Complete</h1>" | sudo tee /var/www/html/index.html
+              sudo rm /var/www/html/index.html
+              echo '${file("${path.module}/src/index.html")}' | sudo tee /var/www/html/index.html
+              sudo systemctl restart nginx
               CUSTOM_DATA
   )
 }
