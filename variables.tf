@@ -3,9 +3,9 @@ variable "resource_group_name" {
 }
 
 variable "location" {
-  default = "southindia"
+  default = "centralindia" 
 }
 
 variable "vm_size" {
-  default = "Standard_B1s"
+  default = "Standard_B2pts_v2"
 }
