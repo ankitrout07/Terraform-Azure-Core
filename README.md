@@ -1,38 +1,42 @@
-Project Overview
-This repository contains the first phase of a modular infrastructure project focused on automated cloud provisioning. It utilizes Terraform to architect and deploy a standardized Linux environment on Microsoft Azure. The project automates the creation of a secure virtual network and the deployment of an Ubuntu-based web server with a pre-configured Nginx service.
+# Phase 1: Modular Azure Infrastructure (ARM64 Optimized)
 
-Core Objectives
-The primary goal is to automate the lifecycle of a cloud-based web server, moving away from manual console configuration toward Infrastructure as Code (IaC) to prioritize speed, accuracy, and repeatability.
+### Project Overview
+This repository contains the first phase of a modular infrastructure project focused on automated cloud provisioning within restricted subscription environments (**Azure for Students**). It utilizes **Terraform** to architect a standardized Linux environment on **ARM-based** hardware, prioritizing high-uptime, cost-efficiency, and Infrastructure as Code (IaC) best practices.
 
-Infrastructure Components
-Networking: Provisioning of a dedicated Virtual Network (VNet) and Subnet to isolate resources.
+### Core Objectives
+* **Infrastructure as Code (IaC):** Eliminate manual "Click-Ops" by automating the entire lifecycle of a cloud web server.
+* **Architecture Alignment:** Specifically targeting **Ampere Altra (ARM64)** processors to bypass x86_64 capacity shortages and policy restrictions in the `centralindia` region.
+* **State Reconciliation:** Implementing manual state imports to recover from partial deployment failures and maintain a "Single Source of Truth" in the `.tfstate` file.
 
-Security: Implementation of a Network Security Group (NSG) with strict inbound rules, permitting traffic only on Port 80 (HTTP) and Port 22 (SSH).
+### Infrastructure Components
+* **Networking:** Provisioning of a dedicated Virtual Network (**VNet**) and a high-availability **Subnet** (`snet-web`).
+* **Security:** Implementation of a **Network Security Group (NSG)** with strict inbound rules, permitting traffic only on **Port 80 (HTTP)** and **Port 22 (SSH)**.
+* **Compute:** Deployment of an **Ubuntu 22.04 LTS (ARM64)** instance using the `Standard_B2pts_v2` SKU.
+* **Automation:** Zero-touch bootstrapping via `custom_data` scripts to automate **Nginx** installation and local `src/index.html` injection immediately upon instance launch.
 
-Compute: Deployment of an Ubuntu 22.04 LTS Virtual Machine instance.
+---
 
-Automation: Bootstrapping via custom_data shell scripts to automate Nginx installation and service activation immediately upon instance launch.
+### Technical Stack
+* **Cloud Provider:** Microsoft Azure
+* **IaC Tool:** Terraform v1.x
+* **Region:** Central India (`centralindia`)
+* **Instance SKU:** `Standard_B2pts_v2` (ARM64)
+* **OS Image:** `Canonical:0001-com-ubuntu-server-jammy:22_04-lts-arm64:latest`
+* **Web Server:** Nginx (Stable)
 
-Technical Stack
-Cloud Provider: Microsoft Azure
+---
 
-Infrastructure as Code: Terraform
+### Deployment & Recovery Workflow
 
-Operating System: Ubuntu 22.04 LTS
+#### 1. Initialization & State Sync
+In restricted tiers, resources often "orphan" after failed runs. Use the following sync pattern to reconcile the environment:
 
-Web Server: Nginx
-
-Deployment Instructions
-Initialize Terraform:
-
-Bash
+```bash
+# Initialize providers
 terraform init
-Apply Configuration:
 
-Bash
-terraform apply -auto-approve
-Validation:
-Verify the web server is reachable by running:
-
-Bash
-curl -I $(terraform output -raw public_ip_address)
+# If resources already exist in Azure, import them to local state:
+terraform import azurerm_resource_group.rg /subscriptions/<sub_id>/resourceGroups/rg-terraform-azure-core
+terraform import azurerm_virtual_network.vnet /subscriptions/<sub_id>/resourceGroups/rg-terraform-azure-core/providers/Microsoft.Network/virtualNetworks/vnet-core
+terraform import azurerm_subnet.subnet /subscriptions/<sub_id>/resourceGroups/rg-terraform-azure-core/providers/Microsoft.Network/virtualNetworks/vnet-core/subnets/snet-web
+terraform import azurerm_public_ip.pip /subscriptions/<sub_id>/resourceGroups/rg-terraform-azure-core/providers/Microsoft.Network/publicIPAddresses/pip-web-server
