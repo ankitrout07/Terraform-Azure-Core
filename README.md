@@ -1,4 +1,4 @@
-# Phase 1: Modular Azure Infrastructure (ARM64 Optimized)
+# Terraform Azure Core Infrastructure
 
 ### Project Overview
 This repository contains the first phase of a modular infrastructure project focused on automated cloud provisioning within restricted subscription environments (**Azure for Students**). It utilizes **Terraform** to architect a standardized Linux environment on **ARM-based** hardware, prioritizing high-uptime, cost-efficiency, and Infrastructure as Code (IaC) best practices.
