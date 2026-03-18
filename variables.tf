@@ -3,7 +3,7 @@ variable "resource_group_name" {
 }
 
 variable "location" {
-  default = "centralindia" 
+  default = "centralindia"
 }
 
 variable "vm_size" {
