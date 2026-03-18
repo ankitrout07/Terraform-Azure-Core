@@ -47,17 +47,17 @@ resource "azurerm_network_security_group" "nsg" {
     destination_address_prefix = "*"
   }
 
-  security_rule {
-    name                       = "AllowHTTP"
-    priority                   = 110
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "80"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
+security_rule {
+  name                       = "AllowHTTP"
+  priority                   = 110
+  direction                  = "Inbound"
+  access                     = "Allow"
+  protocol                   = "Tcp"
+  source_port_range          = "*"
+  destination_port_range     = "80" # Ensure this is exactly 80
+  source_address_prefix      = "*"
+  destination_address_prefix = "*"
+}
 }
 
 resource "azurerm_public_ip" "pip" {
@@ -104,22 +104,14 @@ resource "azurerm_linux_virtual_machine" "vm" {
     storage_account_type = "Standard_LRS"
   }
 
-# Update this block in your main.tf
-source_image_reference {
+  source_image_reference {
     publisher = "Canonical"
-    offer     = "0001-com-ubuntu-server-jammy"
-    # Ensure the SKU specifies 'arm64'
-    sku       = "22_04-lts-arm64" 
+    offer     = "UbuntuServer"
+    sku       = "22.04-LTS"
     version   = "latest"
   }
 
-  custom_data = base64encode(<<-CUSTOM_DATA
-              #!/bin/bash
-              sudo apt-get update -y
-              sudo apt-get install nginx -y
-              sudo rm /var/www/html/index.html
-              echo '${file("${path.module}/src/index.html")}' | sudo tee /var/www/html/index.html
-              sudo systemctl restart nginx
-              CUSTOM_DATA
-  )
+  custom_data = base64encode(templatefile("${path.module}/src/init.sh", {
+    index_html_content = file("${path.module}/src/index.html")
+  }))
 }
