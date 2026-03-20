@@ -1,19 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Terraform Azure Core</title>
-    <style>
-        body { background-color: #0f172a; color: #f8fafc; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { border: 1px solid #1e293b; padding: 2rem; border-radius: 0.5rem; background: #1e293b; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-        h1 { color: #38bdf8; }
-        code { background: #0f172a; padding: 0.2rem 0.4rem; border-radius: 0.25rem; color: #f472b6; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Console | Managed by Terraform</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div class="card">
-        <h1>Infrastructure Deployed</h1>
-        <p>This site is hosted on <code>Ubuntu 22.04</code> via <code>Terraform</code>.</p>
-        <p>Status: <strong>Production Ready</strong></p>
+    <div class="container">
+        <span class="badge">Production Live</span>
+        <h1>Infrastructure Dashboard</h1>
+        <div class="infra-details">
+            <div class="detail-item"><span class="label">Provider:</span><span class="value">Azure</span></div>
+            <div class="detail-item"><span class="label">Architecture:</span><span class="value">ARM64</span></div>
+            <div class="detail-item"><span class="label">Region:</span><span class="value">Central India</span></div>
+        </div>
+        <footer>&copy; Sher Khan</footer>
     </div>
+    <script src="js/main.js"></script>
 </body>
 </html>
