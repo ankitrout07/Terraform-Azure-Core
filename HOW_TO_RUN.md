@@ -1,82 +1,91 @@
-# How to Run This Terraform Project
+# 🚀 Infrastructure Dashboard: Deployment Guide
 
-This document provides instructions on how to deploy the Terraform code in this project.
+This document provides high-uptime instructions for deploying the **Modular Azure Core** infrastructure and the associated production dashboard.
 
-## Prerequisites
+## 🛠 Prerequisites
 
-Before you begin, ensure you have the following software installed on your machine:
+Ensure your local environment (**NTZ-LINUX-003**) is ready:
+* **Terraform v1.4+**
+* **Azure CLI v2.0+**
+* **OpenSSH Client** (for automated file syncing)
 
-*   [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
-*   [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+## 🏗 Configuration
 
-You will also need an active Azure subscription.
+1. **Azure Authentication:**
+   ```bash
+   az login
+   ```
 
-## Configuration
+2. **Environment Variables:**
+   The project is pre-configured for **Central India** using **ARM64** VM sizes. Create a `terraform.tfvars` to override defaults if necessary:
+   ```hcl
+   resource_group_name = "rg-terraform-azure-core"
+   location            = "Central India"
+   vm_size             = "Standard_B1ps" # ARM64 Architecture
+   ```
 
-1.  **Log in to Azure:**
+## 🚀 Execution
 
-    Open a terminal and run the following command to log in to your Azure account:
+1. **Initialize & Sync:**
+   Download providers and initialize the backend.
+   ```bash
+   terraform init
+   ```
 
-    ```bash
-    az login
-    ```
+2. **Validate & Plan:**
+   Always verify the execution plan to prevent configuration drift.
+   ```bash
+   terraform plan
+   ```
 
-2.  **Configure Terraform Variables:**
+3. **Provision Infrastructure:**
+   Deploy the VNet, NSG, Storage Account, and VM.
+   ```bash
+   terraform apply -auto-approve
+   ```
 
-    This project uses variables to define the resource group name, location, and VM size. You can set these variables in a `terraform.tfvars` file or by passing them as command-line arguments.
 
-    Create a file named `terraform.tfvars` with the following content:
 
-    ```hcl
-    resource_group_name = "rg-terraform-azure-core"
-    location            = "East US"
-    vm_size             = "Standard_DS1_v2"
-    ```
+---
 
-    You can choose a different location and VM size based on your requirements.
+## 📦 Application Deployment (Phase 2 Modular)
 
-## Execution
+Infrastructure alone only gives you a blank server. Run these steps to deploy the **Production Dashboard** assets.
 
-1.  **Initialize Terraform:**
+1. **Get the Public IP:**
+   ```bash
+   IP=$(terraform output -raw web_server_public_ip)
+   ```
 
-    Open a terminal in the root directory of this project and run the following command to initialize Terraform:
+2. **Execute Deployment Script:**
+   We use a decoupled sync strategy to ensure CSS and JS are placed in their modular directories.
+   ```bash
+   chmod +x deploy.sh
+   ./deploy.sh
+   ```
 
-    ```bash
-    terraform init
-    ```
+## 🔍 Verification
 
-2.  **Plan the Deployment:**
+1. **Health Check:**
+   Verify the Nginx service is responding with our modular payload:
+   ```bash
+   curl -I http://$(terraform output -raw web_server_public_ip)
+   ```
 
-    Run the following command to see the execution plan:
+2. **Browser Access:**
+   Navigate to `http://<web_server_public_ip>`. 
+   * **Expected Result:** A dark-themed dashboard showing **Architecture: ARM64** and **Region: Central India**.
+   * **Console Check:** Press `F12` and verify the message: `Production Dashboard Loaded Successfully.`
 
-    ```bash
-    terraform plan
-    ```
+## 🧹 Infrastructure Lifecycle (Cleanup)
 
-3.  **Apply the Configuration:**
-
-    Run the following command to deploy the resources:
-
-    ```bash
-    terraform apply -auto-approve
-    ```
-
-## Verification
-
-After the `terraform apply` command completes successfully, you can verify the deployment by:
-
-1.  **Checking the Azure Portal:**
-
-    Log in to the Azure portal and navigate to the resource group you created. You should see the virtual machine, virtual network, and other resources.
-
-2.  **Accessing the Web Server:**
-
-    Find the public IP address of the virtual machine in the output of the `terraform apply` command or by looking at the `azurerm_public_ip` resource in the Azure portal. Open a web browser and navigate to `http://<public-ip-address>`. You should see the "Hello, World!" message from the `src/index.html` file.
-
-## Cleanup
-
-To destroy the resources created by this project, run the following command:
+To avoid unnecessary Azure costs, tear down the environment when finished:
 
 ```bash
+# WARNING: This action is destructive and removes all provisioned resources.
 terraform destroy -auto-approve
 ```
+
+---
+
+**Next Step:** Since your `terraform.tfstate` is currently sitting in your local sidebar, would you like me to help you add the **Remote Backend** block to your `providers.tf` so your state is safely stored in the `storage.tf` container?
