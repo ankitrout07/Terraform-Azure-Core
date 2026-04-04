@@ -37,5 +37,5 @@ resource "azurerm_linux_virtual_machine" "vm" {
   }
 
   # Cleaned up bootstrap reference
-  custom_data = base64encode(file("${path.module}/scripts/install_nginx.sh"))
+  custom_data = base64encode(file("${path.module}/../scripts/init.sh"))
 }

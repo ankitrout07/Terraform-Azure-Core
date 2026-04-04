@@ -27,8 +27,9 @@ Ensure your local environment (**NTZ-LINUX-003**) is ready:
 ## 🚀 Execution
 
 1. **Initialize & Sync:**
-   Download providers and initialize the backend.
+   Navigate to the infra directory, download providers and initialize the backend.
    ```bash
+   cd infra
    terraform init
    ```
 
@@ -58,10 +59,9 @@ Infrastructure alone only gives you a blank server. Run these steps to deploy th
    ```
 
 2. **Execute Deployment Script:**
-   We use a decoupled sync strategy to ensure CSS and JS are placed in their modular directories.
+   We use a decoupled sync strategy to ensure CSS and JS are placed in their modular directories. Note: Run this from the root of the project.
    ```bash
-   chmod +x deploy.sh
-   ./deploy.sh
+   ./scripts/deploy.sh
    ```
 
 ## 🔍 Verification

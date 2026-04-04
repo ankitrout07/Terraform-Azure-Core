@@ -29,8 +29,8 @@ resource "azurerm_storage_container" "assets" {
 # 4. Automation: Sync local 'src' directory to Azure Blob Storage
 resource "null_resource" "sync_frontend_assets" {
   triggers = {
-    # This detects changes in ANY file inside the src directory
-    dir_hash = sha1(join("", [for f in fileset("${path.module}/src", "**") : filesha1("${path.module}/src/${f}")]))
+    # This detects changes in ANY file inside the app directory
+    dir_hash = sha1(join("", [for f in fileset("${path.module}/../app", "**") : filesha1("${path.module}/../app/${f}")]))
   }
 
   provisioner "local-exec" {
@@ -40,7 +40,7 @@ resource "null_resource" "sync_frontend_assets" {
         --account-name ${azurerm_storage_account.static_assets.name} \
         --auth-mode key \
         --destination "web-assets" \
-        --source "${path.module}/src" \
+        --source "${path.module}/../app" \
         --overwrite
     EOT
   }

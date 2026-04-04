@@ -19,3 +19,9 @@ variable "tags" {
     ManagedBy   = "Terraform"
   }
 }
+
+variable "admin_ip_cidr" {
+  description = "The CIDR block allowed to SSH into the VM"
+  type        = string
+  default     = "2401:4900:8fe2:3795:8162:21f3:645d:10da" # Your current IP. Can change to 0.0.0.0/0 to open it entirely.
+}
